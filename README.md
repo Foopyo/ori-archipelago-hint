@@ -2,7 +2,7 @@
 
 This tool replicates the hint system from the standalone ori randomizers for archipelago: instead of telling you which location holds a specific item, it tells you in which area its located (or the game its in if this tool doesn't have the necessary informations).
 
-![Screenshot of the app](https://imgur.com/3DUleJM)
+![Screenshot of the app](https://i.imgur.com/3DUleJM.png)
 
 ## How to use
 
