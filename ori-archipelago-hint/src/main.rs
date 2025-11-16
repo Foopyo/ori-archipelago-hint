@@ -11,7 +11,7 @@ use regex::Regex;
 fn main() -> eframe::Result {
     env_logger::init(); // Log to stderr (if you run with `RUST_LOG=debug`).
     let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default().with_inner_size([1000.0, 240.0]),
+        viewport: egui::ViewportBuilder::default().with_inner_size([750.0, 350.0]),
         ..Default::default()
     };
     eframe::run_native(
@@ -60,129 +60,137 @@ struct GameHint {
 }
 
 struct ArchipelagoWorld {
-    games: Vec<GameHint>
+    games: Vec<GameHint>,
+    spoiler_path: String
 }
 
 impl Default for ArchipelagoWorld {
     fn default() -> Self {
         let mut r = ArchipelagoWorld {
-            games: Vec::new()
+            games: Vec::new(),
+            spoiler_path: "".to_owned()
         };
 
-        let json_localisation: Vec<GamesLocation> = serde_json::from_str(&fs::read_to_string("D:/Documents/GitHub/ori-archipelago-hint/ori-archipelago-hint/src/locations.json").expect("Should be able to read locations.json")).unwrap();
-
-        let mut player = "";
-        let r_player = Regex::new("Player [0-9]*:.*").unwrap();
-
-        for line in fs::read_to_string("D:/Documents/GitHub/ori-archipelago-hint/ori-archipelago-hint/src/test.txt").unwrap().lines(){
-            if player != "" && line.contains("Game:") {
-                let game = line.split(':').collect::<Vec<&str>>()[1].trim();
-                r.games.push(GameHint{
-                    game_name: game.to_string(),
-                    player_name: player.to_string(),
-                    groups_hints: createHintsStructure(game)
-                });
-            }
-            else if r_player.is_match(line){
-                player = line.split(':').collect::<Vec<&str>>()[1].trim();
-            }
-            else{
-                player = "";
-            }
-
-            if line.contains(": GinsoKey (") {
-                let line_split = line.split(": GinsoKey (").collect::<Vec<&str>>();
-                let for_player = line_split[1].trim().replace(")","");
-                let area_loc = getAreaHint(&line_split, &r.games, &json_localisation);
-
-                setHintLocation(&mut r.games, &for_player, "GinsoKey", &area_loc);
-            }
-            else if line.contains(": ForlornKey (") {
-                let line_split = line.split(": ForlornKey (").collect::<Vec<&str>>();
-                let for_player = line_split[1].trim().replace(")","");
-                let area_loc = getAreaHint(&line_split, &r.games, &json_localisation);
-
-                setHintLocation(&mut r.games, &for_player, "ForlornKey", &area_loc);
-            }
-            else if line.contains(": HoruKey (") {
-                let line_split = line.split(": HoruKey (").collect::<Vec<&str>>();
-                let for_player = line_split[1].trim().replace(")","");
-                let area_loc = getAreaHint(&line_split, &r.games, &json_localisation);
-
-                setHintLocation(&mut r.games, &for_player, "HoruKey", &area_loc);
-            }
-            else if line.contains(": Stomp (") {
-                let line_split = line.split(": Stomp (").collect::<Vec<&str>>();
-                let for_player = line_split[1].trim().replace(")","");
-                let area_loc = getAreaHint(&line_split, &r.games, &json_localisation);
-
-                setHintLocation(&mut r.games, &for_player, "Stomp", &area_loc);
-            }
-            else if line.contains(": Grenade (") {
-                let line_split = line.split(": Grenade (").collect::<Vec<&str>>();
-                let for_player = line_split[1].trim().replace(")","");
-                let area_loc = getAreaHint(&line_split, &r.games, &json_localisation);
-
-                setHintLocation(&mut r.games, &for_player, "Grenade", &area_loc);
-            }
-            else if line.contains(": Bash (") {
-                let line_split = line.split(": Bash (").collect::<Vec<&str>>();
-                let for_player = line_split[1].trim().replace(")","");
-                let area_loc = getAreaHint(&line_split, &r.games, &json_localisation);
-
-                setHintLocation(&mut r.games, &for_player, "Bash", &area_loc);
-            }
-            else if line.contains(": Bow (") {
-                let line_split = line.split(": Bow (").collect::<Vec<&str>>();
-                let for_player = line_split[1].trim().replace(")","");
-                let area_loc = getAreaHint(&line_split, &r.games, &json_localisation);
-
-                setHintLocation(&mut r.games, &for_player, "Bow", &area_loc);
-            }
-            else if line.contains(": Flap (") {
-                let line_split = line.split(": Flap (").collect::<Vec<&str>>();
-                let for_player = line_split[1].trim().replace(")","");
-                let area_loc = getAreaHint(&line_split, &r.games, &json_localisation);
-
-                setHintLocation(&mut r.games, &for_player, "Flap", &area_loc);
-            }
-            else if line.contains(": Glide (") {
-                let line_split = line.split(": Glide (").collect::<Vec<&str>>();
-                let for_player = line_split[1].trim().replace(")","");
-                let area_loc = getAreaHint(&line_split, &r.games, &json_localisation);
-
-                setHintLocation(&mut r.games, &for_player, "Glide", &area_loc);
-            }
-            else if line.contains(": Clean Water (") {
-                let line_split = line.split(": Clean Water (").collect::<Vec<&str>>();
-                let for_player = line_split[1].trim().replace(")","");
-                let area_loc = getAreaHint(&line_split, &r.games, &json_localisation);
-
-                setHintLocation(&mut r.games, &for_player, "Clean Water", &area_loc);
-            }
-            else if line.contains(": Water Dash (") {
-                let line_split = line.split(": Water Dash (").collect::<Vec<&str>>();
-                let for_player = line_split[1].trim().replace(")","");
-                let area_loc = getAreaHint(&line_split, &r.games, &json_localisation);
-
-                setHintLocation(&mut r.games, &for_player, "Water Dash", &area_loc);
-            }
-            else if line.contains(": Burrow (") {
-                let line_split = line.split(": Burrow (").collect::<Vec<&str>>();
-                let for_player = line_split[1].trim().replace(")","");
-                let area_loc = getAreaHint(&line_split, &r.games, &json_localisation);
-
-                setHintLocation(&mut r.games, &for_player, "Burrow", &area_loc);
-            }
-            else if line.contains(": Flash (") {
-                let line_split = line.split(": Flash (").collect::<Vec<&str>>();
-                let for_player = line_split[1].trim().replace(")","");
-                let area_loc = getAreaHint(&line_split, &r.games, &json_localisation);
-
-                setHintLocation(&mut r.games, &for_player, "Flash", &area_loc);
-            }
-        }
         return r;
+    }
+}
+
+fn readSpoiler(spoiler_path: &str, world: &mut ArchipelagoWorld){
+    world.games = Vec::new();
+    world.spoiler_path = spoiler_path.to_owned();
+
+    let json_localisation: Vec<GamesLocation> = serde_json::from_str(&fs::read_to_string("locations.json").expect("Should be able to read locations.json")).unwrap();
+
+    let mut player = "";
+    let r_player = Regex::new("Player [0-9]*:.*").unwrap();
+
+    for line in fs::read_to_string(spoiler_path).unwrap().lines(){
+        if player != "" && line.contains("Game:") {
+            let game = line.split(':').collect::<Vec<&str>>()[1].trim();
+            world.games.push(GameHint{
+                game_name: game.to_string(),
+                player_name: player.to_string(),
+                groups_hints: createHintsStructure(game)
+            });
+        }
+        else if r_player.is_match(line){
+            player = line.split(':').collect::<Vec<&str>>()[1].trim();
+        }
+        else{
+            player = "";
+        }
+
+        if line.contains(": GinsoKey (") {
+            let line_split = line.split(": GinsoKey (").collect::<Vec<&str>>();
+            let for_player = line_split[1].trim().replace(")","");
+            let area_loc = getAreaHint(&line_split, &world.games, &json_localisation);
+
+            setHintLocation(&mut world.games, &for_player, "GinsoKey", &area_loc);
+        }
+        else if line.contains(": ForlornKey (") {
+            let line_split = line.split(": ForlornKey (").collect::<Vec<&str>>();
+            let for_player = line_split[1].trim().replace(")","");
+            let area_loc = getAreaHint(&line_split, &world.games, &json_localisation);
+
+            setHintLocation(&mut world.games, &for_player, "ForlornKey", &area_loc);
+        }
+        else if line.contains(": HoruKey (") {
+            let line_split = line.split(": HoruKey (").collect::<Vec<&str>>();
+            let for_player = line_split[1].trim().replace(")","");
+            let area_loc = getAreaHint(&line_split, &world.games, &json_localisation);
+
+            setHintLocation(&mut world.games, &for_player, "HoruKey", &area_loc);
+        }
+        else if line.contains(": Stomp (") {
+            let line_split = line.split(": Stomp (").collect::<Vec<&str>>();
+            let for_player = line_split[1].trim().replace(")","");
+            let area_loc = getAreaHint(&line_split, &world.games, &json_localisation);
+
+            setHintLocation(&mut world.games, &for_player, "Stomp", &area_loc);
+        }
+        else if line.contains(": Grenade (") {
+            let line_split = line.split(": Grenade (").collect::<Vec<&str>>();
+            let for_player = line_split[1].trim().replace(")","");
+            let area_loc = getAreaHint(&line_split, &world.games, &json_localisation);
+
+            setHintLocation(&mut world.games, &for_player, "Grenade", &area_loc);
+        }
+        else if line.contains(": Bash (") {
+            let line_split = line.split(": Bash (").collect::<Vec<&str>>();
+            let for_player = line_split[1].trim().replace(")","");
+            let area_loc = getAreaHint(&line_split, &world.games, &json_localisation);
+
+            setHintLocation(&mut world.games, &for_player, "Bash", &area_loc);
+        }
+        else if line.contains(": Bow (") {
+            let line_split = line.split(": Bow (").collect::<Vec<&str>>();
+            let for_player = line_split[1].trim().replace(")","");
+            let area_loc = getAreaHint(&line_split, &world.games, &json_localisation);
+
+            setHintLocation(&mut world.games, &for_player, "Bow", &area_loc);
+        }
+        else if line.contains(": Flap (") {
+            let line_split = line.split(": Flap (").collect::<Vec<&str>>();
+            let for_player = line_split[1].trim().replace(")","");
+            let area_loc = getAreaHint(&line_split, &world.games, &json_localisation);
+
+            setHintLocation(&mut world.games, &for_player, "Flap", &area_loc);
+        }
+        else if line.contains(": Glide (") {
+            let line_split = line.split(": Glide (").collect::<Vec<&str>>();
+            let for_player = line_split[1].trim().replace(")","");
+            let area_loc = getAreaHint(&line_split, &world.games, &json_localisation);
+
+            setHintLocation(&mut world.games, &for_player, "Glide", &area_loc);
+        }
+        else if line.contains(": Clean Water (") {
+            let line_split = line.split(": Clean Water (").collect::<Vec<&str>>();
+            let for_player = line_split[1].trim().replace(")","");
+            let area_loc = getAreaHint(&line_split, &world.games, &json_localisation);
+
+            setHintLocation(&mut world.games, &for_player, "Clean Water", &area_loc);
+        }
+        else if line.contains(": Water Dash (") {
+            let line_split = line.split(": Water Dash (").collect::<Vec<&str>>();
+            let for_player = line_split[1].trim().replace(")","");
+            let area_loc = getAreaHint(&line_split, &world.games, &json_localisation);
+
+            setHintLocation(&mut world.games, &for_player, "Water Dash", &area_loc);
+        }
+        else if line.contains(": Burrow (") {
+            let line_split = line.split(": Burrow (").collect::<Vec<&str>>();
+            let for_player = line_split[1].trim().replace(")","");
+            let area_loc = getAreaHint(&line_split, &world.games, &json_localisation);
+
+            setHintLocation(&mut world.games, &for_player, "Burrow", &area_loc);
+        }
+        else if line.contains(": Flash (") {
+            let line_split = line.split(": Flash (").collect::<Vec<&str>>();
+            let for_player = line_split[1].trim().replace(")","");
+            let area_loc = getAreaHint(&line_split, &world.games, &json_localisation);
+
+            setHintLocation(&mut world.games, &for_player, "Flash", &area_loc);
+        }
     }
 }
 
@@ -378,6 +386,21 @@ impl eframe::App for ArchipelagoWorld {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
             egui::ScrollArea::vertical().show(ui, |ui| {
+                ui.horizontal(|ui|{
+                    ui.label("Select a spoiler file: ");
+                    if ui.button("Open file…").clicked() && let Some(path) = rfd::FileDialog::new().pick_file()
+                    {
+                        let spoiler_path = &path.display().to_string();
+                        readSpoiler(spoiler_path, self);
+                    }
+                    if self.spoiler_path != "" {
+                        ui.label("Loded file ".to_owned() + &self.spoiler_path);
+                    }
+                });
+                ui.add_space(5.0);
+                ui.separator();
+                ui.add_space(5.0);
+
                 for game in &mut self.games {
                     ui.horizontal(|ui| {
                         ui.heading(game.game_name.clone() + " (" + &game.player_name + ")");    
@@ -421,9 +444,7 @@ impl eframe::App for ArchipelagoWorld {
                         });
                         ui.add_space(10.0);
                     }
-                    ui.add_space(5.0);
-                    ui.separator();
-                    ui.add_space(5.0);
+                    ui.add_space(10.0);
                 }
             });
         });
