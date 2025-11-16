@@ -222,12 +222,12 @@ fn getAreaHint(line_split: &Vec<&str>, games: &Vec<GameHint>, json_localisation:
                             return a.area_name.to_owned() + " (" + &pickup_player + ")";
                         }
                     }
-                    return g.game_name.to_owned() + " (" + &pickup_player + ")";
                 }
             }
+            return game.game_name.to_owned() + " (" + &pickup_player + ")";
         }
     }
-    return "Not found".to_string();
+    return "Item not found".to_string();
 }
 
 fn createHintsStructure(game: &str) -> Vec<GroupHint> {
@@ -257,32 +257,32 @@ fn createBFHints() -> Vec<GroupHint> {
     keys.hints.push(Hint{
         internal_name: "GinsoKey".to_owned(),
         displayed_name: "Water Vein".to_owned(),
-        location: "Starting".to_owned(),
+        location: "Starting item".to_owned(),
         unlocked: false
     });
     keys.hints.push(Hint{
         internal_name: "ForlornKey".to_owned(),
         displayed_name: "Gummon Seal".to_owned(),
-        location: "Starting".to_owned(),
+        location: "Starting item".to_owned(),
         unlocked: false
     });
     keys.hints.push(Hint{
         internal_name: "HoruKey".to_owned(),
         displayed_name: "Sunstone".to_owned(),
-        location: "Starting".to_owned(),
+        location: "Starting item".to_owned(),
         unlocked: false
     });
 
     forlorn.hints.push(Hint{
         internal_name: "Stomp".to_owned(),
         displayed_name: "Stomp".to_owned(),
-        location: "Starting".to_owned(),
+        location: "Starting item".to_owned(),
         unlocked: false
     });
     forlorn.hints.push(Hint{
         internal_name: "Grenade".to_owned(),
         displayed_name: "Grenade".to_owned(),
-        location: "Starting".to_owned(),
+        location: "Starting item".to_owned(),
         unlocked: false
     });
 
@@ -314,57 +314,57 @@ fn createWotWHints() -> Vec<GroupHint> {
     twillen.hints.push(Hint{
         internal_name: "Bash".to_owned(),
         displayed_name: "Bash".to_owned(),
-        location: "Starting".to_owned(),
+        location: "Starting item".to_owned(),
         unlocked: false
     });
     twillen.hints.push(Hint{
         internal_name: "Bow".to_owned(),
         displayed_name: "Bow".to_owned(),
-        location: "Starting".to_owned(),
+        location: "Starting item".to_owned(),
         unlocked: false
     });
     
     opher.hints.push(Hint{
         internal_name: "Flap".to_owned(),
         displayed_name: "Flap".to_owned(),
-        location: "Starting".to_owned(),
+        location: "Starting item".to_owned(),
         unlocked: false
     });
     opher.hints.push(Hint{
         internal_name: "Glide".to_owned(),
         displayed_name: "Glide".to_owned(),
-        location: "Starting".to_owned(),
+        location: "Starting item".to_owned(),
         unlocked: false
     });
     opher.hints.push(Hint{
         internal_name: "Clean Water".to_owned(),
         displayed_name: "Clean Water".to_owned(),
-        location: "Starting".to_owned(),
+        location: "Starting item".to_owned(),
         unlocked: false
     });
 
     lupo.hints.push(Hint{
         internal_name: "Water Dash".to_owned(),
         displayed_name: "Water Dash".to_owned(),
-        location: "Starting".to_owned(),
+        location: "Starting item".to_owned(),
         unlocked: false
     });
     lupo.hints.push(Hint{
         internal_name: "Burrow".to_owned(),
         displayed_name: "Burrow".to_owned(),
-        location: "Starting".to_owned(),
+        location: "Starting item".to_owned(),
         unlocked: false
     });
     lupo.hints.push(Hint{
         internal_name: "Grenade".to_owned(),
         displayed_name: "Grenade".to_owned(),
-        location: "Starting".to_owned(),
+        location: "Starting item".to_owned(),
         unlocked: false
     });
     lupo.hints.push(Hint{
         internal_name: "Flash".to_owned(),
         displayed_name: "Flash".to_owned(),
-        location: "Starting".to_owned(),
+        location: "Starting item".to_owned(),
         unlocked: false
     });
 
@@ -402,49 +402,51 @@ impl eframe::App for ArchipelagoWorld {
                 ui.add_space(5.0);
 
                 for game in &mut self.games {
-                    ui.horizontal(|ui| {
-                        ui.heading(game.game_name.clone() + " (" + &game.player_name + ")");    
-                        for group in &mut game.groups_hints {
-                            if ui.button(group.button_label.clone()).clicked(){
-                                if group.unlock_all {
-                                    for hint in &mut group.hints{
-                                        hint.unlocked = true;
-                                    }
-                                }
-                                else{
-                                    let mut hintLeft = false;
-                                    for h in &group.hints{
-                                        if !h.unlocked{
-                                            hintLeft = true;
-                                            break;
-                                        } 
-                                    }
-                                    if hintLeft {
-                                        let mut rng = ChaCha20Rng::from_os_rng();
-                                        let mut i = rng.random_range(0..group.hints.len());
-                                        while group.hints[i].unlocked{
-                                            i = rng.random_range(0..group.hints.len());
-                                        }
-                                        group.hints[i].unlocked = true;
-                                    }
-                                }
-                            }
-                        }
-                    });
-                    ui.add_space(5.0);
-                    for group in &game.groups_hints {
+                    if !game.groups_hints.is_empty(){
                         ui.horizontal(|ui| {
-                            for h in &group.hints {
-                                ui.vertical(|ui| {
-                                    ui.label(&h.displayed_name);
-                                    ui.label(format!("{}",getLocationSkill(h)));
-                                });
-                                ui.add_space(20.0);
+                            ui.heading(game.game_name.clone() + " (" + &game.player_name + ")");    
+                            for group in &mut game.groups_hints {
+                                if ui.button(group.button_label.clone()).clicked(){
+                                    if group.unlock_all {
+                                        for hint in &mut group.hints{
+                                            hint.unlocked = true;
+                                        }
+                                    }
+                                    else{
+                                        let mut hintLeft = false;
+                                        for h in &group.hints{
+                                            if !h.unlocked{
+                                                hintLeft = true;
+                                                break;
+                                            } 
+                                        }
+                                        if hintLeft {
+                                            let mut rng = ChaCha20Rng::from_os_rng();
+                                            let mut i = rng.random_range(0..group.hints.len());
+                                            while group.hints[i].unlocked{
+                                                i = rng.random_range(0..group.hints.len());
+                                            }
+                                            group.hints[i].unlocked = true;
+                                        }
+                                    }
+                                }
                             }
                         });
+                        ui.add_space(5.0);
+                        for group in &game.groups_hints {
+                            ui.horizontal(|ui| {
+                                for h in &group.hints {
+                                    ui.vertical(|ui| {
+                                        ui.label(&h.displayed_name);
+                                        ui.label(format!("{}",getLocationSkill(h)));
+                                    });
+                                    ui.add_space(20.0);
+                                }
+                            });
+                            ui.add_space(10.0);
+                        }
                         ui.add_space(10.0);
                     }
-                    ui.add_space(10.0);
                 }
             });
         });

@@ -313,7 +313,16 @@
                     "ValleyMap",
                     "HoruMap",
                     "SwampMap",
-                    "SorrowMap"
+                    "SorrowMap",
+                    "ProgressiveMap1",
+                    "ProgressiveMap2",
+                    "ProgressiveMap3",
+                    "ProgressiveMap4",
+                    "ProgressiveMap5",
+                    "ProgressiveMap6",
+                    "ProgressiveMap7",
+                    "ProgressiveMap8",
+                    "ProgressiveMap9"
                 ]
             }
         ]
