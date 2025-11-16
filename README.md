@@ -30,7 +30,7 @@ Since this is supposed to replicate the hint system from the standalone Ori rand
 While you can't add hints for items in other games without editing the source code, you can pretty easily add the area information from other games. This makes it possible to hint at the area within the game instead of hinting at the game a iven item is in.
 
 To do so, edit locations.json to add any relevant informations. Format:
-``
+```
 [
   {
   	"game_name": "Name of the game as it appears in the yaml file]",
@@ -61,4 +61,4 @@ To do so, edit locations.json to add any relevant informations. Format:
   	]
   }
 ]
-``
+```
